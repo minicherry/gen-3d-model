@@ -15,7 +15,7 @@ import {
 import { generateTextTo3D, getGenerate } from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
-const GenModel = ({ onGeneratingChange, onModelUrlChange }) => {
+const GenModel = ({ onModelUrlChange }) => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [mode, setMode] = useState<'text' | 'image'>('text')
   const [prompt, setPrompt] = useState('')
