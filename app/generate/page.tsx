@@ -49,15 +49,9 @@ const Generate = () => {
           </div>
         </div>
         {nowPanel === 'model' ? (
-          <GenModel
-            onGeneratingChange={(generating) => setIsGenerating(generating)}
-            onModelUrlChange={(url) => setViewModelUrl(url)}
-          />
+          <GenModel onModelUrlChange={(url) => setViewModelUrl(url)} />
         ) : (
-          <GenTexture
-            onGeneratingChange={(generating) => setIsGenerating(generating)}
-            onModelUrlChange={(url) => setViewModelUrl(url)}
-          />
+          <GenTexture onModelUrlChange={(url) => setViewModelUrl(url)} />
         )}
 
         <div className={styles.rightPanel}>
@@ -75,10 +69,7 @@ const Generate = () => {
 
           <div className={styles.viewerWrap}>
             <div className={styles.viewerCard}>
-              <ModelViewer
-                isGenerating={isGenerating}
-                remoteUrl={viewerRemoteUrl}
-              />
+              <ModelViewer remoteUrl={viewerRemoteUrl} />
             </div>
           </div>
 
