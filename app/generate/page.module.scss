@@ -1,0 +1,193 @@
+.page {
+  min-height: 100vh;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  display: flex;
+  flex-direction: column;
+
+  .header {
+    height: 64px;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .backLink {
+    font-size: 14px;
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+
+    &:hover {
+      color: hsl(var(--foreground));
+    }
+  }
+
+  .title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .headerPlaceholder {
+    width: 64px;
+  }
+
+  .main {
+    display: flex;
+    width: 100%;
+    margin: 0 auto;
+    height: calc(100vh - 64px);
+    overflow: hidden;
+
+    .leftMenu {
+      width: 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      padding-top: 24px;
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+
+      .leftMenuItem {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        gap: 8px;
+        font-size: 12px;
+        color: hsl(var(--muted-foreground));
+      }
+
+      .leftMenuItemActive {
+        color: hsl(var(--primary));
+      }
+    }
+
+    .rightPanel {
+      width: calc(100% - 340px);
+      height: 100%;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+
+      .toolbar {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        z-index: 20;
+        display: flex;
+        gap: 8px;
+
+        .toolbarBtn {
+          height: 32px;
+          font-size: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: rgba(0, 0, 0, 0.5);
+          -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+        }
+      }
+
+      .viewerWrap {
+        height: calc(100% - 128px);
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(to bottom, #111827, #000);
+
+        .viewerCard {
+          width: 100%;
+          height: 100%;
+          max-width: 896px;
+          max-height: 800px;
+          aspect-ratio: 1 / 1;
+          border-radius: 16px;
+          overflow: hidden;
+          background: #0a0a0a;
+        }
+      }
+
+      .history {
+        height: 128px;
+        padding: 16px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        background: color-mix(in srgb, hsl(var(--card)) 40%, transparent);
+
+        .historyTitle {
+          margin-bottom: 12px;
+          font-size: 12px;
+          font-weight: 600;
+          color: hsl(var(--muted-foreground));
+        }
+
+        .historyList {
+          display: flex;
+          gap: 16px;
+          overflow-x: auto;
+          padding-bottom: 8px;
+
+          .historyItem {
+            width: 80px;
+            height: 80px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+
+            .historyOverlay {
+              position: absolute;
+              inset: 0;
+              padding: 4px;
+              display: flex;
+              align-items: flex-end;
+              justify-content: center;
+              opacity: 0;
+              transition: opacity 0.2s ease;
+              background: linear-gradient(
+                to top,
+                rgba(0, 0, 0, 0.8),
+                transparent
+              );
+
+              .historyOverlayText {
+                font-size: 10px;
+                color: #fff;
+              }
+            }
+
+            &:hover .historyOverlay {
+              opacity: 1;
+            }
+
+            .historyThumb {
+              width: 100%;
+              height: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: rgba(255, 255, 255, 0.1);
+
+              .historyIcon {
+                width: 32px;
+                height: 32px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
