@@ -16,20 +16,20 @@ export function Chat() {
       prepareSendMessagesRequest: ({ messages }) => {
         const latestUserMessage = [...messages]
           .reverse()
-          .find(message => message.role === 'user')
+          .find((message) => message.role === 'user')
 
         const prompt =
           latestUserMessage?.parts
-            ?.filter(part => part.type === 'text')
-            .map(part => part.text)
+            ?.filter((part) => part.type === 'text')
+            .map((part) => part.text)
             .join('')
             .trim() ?? ''
 
         return {
-          body: { prompt },
+          body: { prompt }
         }
-      },
-    }),
+      }
+    })
   })
   const scrollRef = useRef<HTMLDivElement>(null)
   const isLoading = status === 'submitted' || status === 'streaming'
@@ -50,7 +50,6 @@ export function Chat() {
 
   return (
     <div className="flex flex-col w-full max-w-2xl mx-auto h-[600px] border border-border/40 rounded-2xl bg-background shadow-2xl shadow-black/5 overflow-hidden">
-      {/* Header */}
       <div className="px-6 py-4 border-b border-border/40 flex items-center justify-between bg-muted/5">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10">
@@ -100,46 +99,46 @@ export function Chat() {
             </div>
           </div>
         ) : (
-          messages.map(message => {
+          messages.map((message) => {
             const text =
               message.parts
-                ?.filter(part => part.type === 'text')
-                .map(part => part.text)
+                ?.filter((part) => part.type === 'text')
+                .map((part) => part.text)
                 .join('') ?? ''
 
             return (
-            <div
-              key={message.id}
-              className={cn(
-                'flex items-start gap-4 transition-all animate-in fade-in slide-in-from-bottom-3 duration-500',
-                message.role === 'user' ? 'flex-row-reverse' : 'flex-row'
-              )}
-            >
               <div
+                key={message.id}
                 className={cn(
-                  'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border transition-colors',
-                  message.role === 'user'
-                    ? 'bg-primary border-primary shadow-sm text-primary-foreground'
-                    : 'bg-muted/50 border-border/50 text-muted-foreground'
+                  'flex items-start gap-4 transition-all animate-in fade-in slide-in-from-bottom-3 duration-500',
+                  message.role === 'user' ? 'flex-row-reverse' : 'flex-row'
                 )}
               >
-                {message.role === 'user' ? (
-                  <User className="w-4 h-4" />
-                ) : (
-                  <Bot className="w-4 h-4" />
-                )}
+                <div
+                  className={cn(
+                    'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border transition-colors',
+                    message.role === 'user'
+                      ? 'bg-primary border-primary shadow-sm text-primary-foreground'
+                      : 'bg-muted/50 border-border/50 text-muted-foreground'
+                  )}
+                >
+                  {message.role === 'user' ? (
+                    <User className="w-4 h-4" />
+                  ) : (
+                    <Bot className="w-4 h-4" />
+                  )}
+                </div>
+                <div
+                  className={cn(
+                    'max-w-[85%] px-4 py-3 rounded-2xl text-[14px] leading-[1.6] transition-all whitespace-pre-wrap',
+                    message.role === 'user'
+                      ? 'bg-primary text-primary-foreground rounded-tr-none shadow-md shadow-primary/10'
+                      : 'bg-muted/30 text-foreground rounded-tl-none border border-border/20'
+                  )}
+                >
+                  {text}
+                </div>
               </div>
-              <div
-                className={cn(
-                  'max-w-[85%] px-4 py-3 rounded-2xl text-[14px] leading-[1.6] transition-all whitespace-pre-wrap',
-                  message.role === 'user'
-                    ? 'bg-primary text-primary-foreground rounded-tr-none shadow-md shadow-primary/10'
-                    : 'bg-muted/30 text-foreground rounded-tl-none border border-border/20'
-                )}
-              >
-                {text}
-              </div>
-            </div>
             )
           })
         )}
@@ -153,7 +152,7 @@ export function Chat() {
         <div className="relative flex items-center group">
           <Input
             value={input}
-            onChange={event => setInput(event.target.value)}
+            onChange={(event) => setInput(event.target.value)}
             placeholder="输入您的问题..."
             className="pr-14 py-7 bg-muted/10 border-border/30 focus-visible:ring-primary/10 transition-all rounded-2xl text-[14px]"
             disabled={isLoading}

@@ -1,5 +1,4 @@
 import React from 'react'
-import Header from '@/components/Header'
 import FeatureCard from '@/components/FeatureCard'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -16,8 +15,6 @@ import {
 const Home = () => {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* <Header /> */}
-
       <main className="flex-1 w-full max-w-[1440px] mx-auto pt-16">
         {/* Hero Section */}
         <section className="px-6 py-20 md:py-32 flex flex-col items-center text-center relative overflow-hidden">
