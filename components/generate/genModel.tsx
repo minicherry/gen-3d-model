@@ -15,7 +15,11 @@ import {
 import { generateTextTo3D, getGenerate } from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
-const GenModel = ({ onModelUrlChange }) => {
+interface GenModelProps {
+  onModelUrlChange?: (url: string) => void
+}
+
+const GenModel = ({ onModelUrlChange }: GenModelProps) => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [mode, setMode] = useState<'text' | 'image'>('text')
   const [prompt, setPrompt] = useState('')
@@ -35,7 +39,7 @@ const GenModel = ({ onModelUrlChange }) => {
 
       const taskId = response
       const getResponse = await getGenerate(taskId)
-      onModelUrlChange(getResponse.model_urls.glb)
+      onModelUrlChange?.(getResponse.model_urls.glb)
     } catch (error) {
       console.error(error)
     }

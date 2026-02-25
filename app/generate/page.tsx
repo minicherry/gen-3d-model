@@ -49,9 +49,9 @@ const Generate = () => {
           </div>
         </div>
         {nowPanel === 'model' ? (
-          <GenModel onModelUrlChange={(url) => setViewModelUrl(url)} />
+          <GenModel onModelUrlChange={(url: string) => setViewModelUrl(url)} />
         ) : (
-          <GenTexture onModelUrlChange={(url) => setViewModelUrl(url)} />
+          <GenTexture onModelUrlChange={(url: string) => setViewModelUrl(url)} />
         )}
 
         <div className={styles.rightPanel}>
