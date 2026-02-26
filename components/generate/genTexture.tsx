@@ -16,7 +16,7 @@ import { generateTextTo3D, getGenerate } from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
 interface GenTextureProps {
-  onModelUrlChange?: (url: string) => void
+  onModelUrlChange?: (url: string | undefined) => void
 }
 
 const GenModel = ({ onModelUrlChange }: GenTextureProps) => {
