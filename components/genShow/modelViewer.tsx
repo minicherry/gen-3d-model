@@ -16,7 +16,7 @@ interface ModelViewerProps {
 const buildProxyModelUrl = (url: string): string => {
   if (process.env.NODE_ENV === 'development') {
     const parsed = new URL(url)
-    return `/meshy-assets${parsed.pathname}${parsed.search}`
+    return `/generated-models${parsed.pathname}${parsed.search}`
   }
   return `/api/model-proxy?url=${encodeURIComponent(url)}`
 }

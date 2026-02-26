@@ -1,11 +1,14 @@
 create table if not exists public.generate_records (
   task_id text primary key,
   result_id text,
+  source_model_urls jsonb not null default '{}'::jsonb,
   model_urls jsonb not null default '{}'::jsonb,
   generated_at timestamptz not null default now()
 );
 alter table public.generate_records
 add column if not exists result_id text;
+alter table public.generate_records
+add column if not exists source_model_urls jsonb not null default '{}'::jsonb;
 
 alter table public.generate_records enable row level security;
 

@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
         source: "/meshy-assets/:path*",
         destination: "https://assets.meshy.ai/:path*",
       },
+      {
+        source: "/generated-models/:path*",
+        destination: "https://yamlbkhubodoxxaavtva.supabase.co/:path*",
+      }
     ];
   },
 };
