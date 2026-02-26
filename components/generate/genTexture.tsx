@@ -16,7 +16,7 @@ import { generateTextTo3D, getGenerate } from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
 interface GenTextureProps {
-  onModelUrlChange?: (url: string | undefined) => void
+  onModelUrlChange?: (url: string) => void
 }
 
 const GenModel = ({ onModelUrlChange }: GenTextureProps) => {
@@ -41,7 +41,7 @@ const GenModel = ({ onModelUrlChange }: GenTextureProps) => {
       console.log(response)
       const taskId = response
       const getResponse = await getGenerate(taskId)
-      onModelUrlChange?.(getResponse?.model_urls?.glb)
+      onModelUrlChange?.(getResponse?.model_urls?.glb ?? '')
       console.log(getResponse)
     } catch (error) {
       console.error(error)

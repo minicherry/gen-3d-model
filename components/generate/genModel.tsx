@@ -16,7 +16,7 @@ import { generateTextTo3D, getGenerate } from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
 interface GenModelProps {
-  onModelUrlChange?: (url: string | undefined) => void
+  onModelUrlChange?: (url: string) => void
 }
 
 const GenModel = ({ onModelUrlChange }: GenModelProps) => {
@@ -39,7 +39,7 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
 
       const taskId = response
       const getResponse = await getGenerate(taskId)
-      onModelUrlChange?.(getResponse?.model_urls?.glb)
+      onModelUrlChange?.(getResponse?.model_urls?.glb ?? '')
     } catch (error) {
       console.error(error)
     }

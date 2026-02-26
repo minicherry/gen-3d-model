@@ -49,12 +49,10 @@ const Generate = () => {
           </div>
         </div>
         {nowPanel === 'model' ? (
-          <GenModel
-            onModelUrlChange={(url: string | undefined) => setViewModelUrl(url)}
-          />
+          <GenModel onModelUrlChange={(url: string) => setViewModelUrl(url)} />
         ) : (
           <GenTexture
-            onModelUrlChange={(url: string | undefined) => setViewModelUrl(url)}
+            onModelUrlChange={(url: string) => setViewModelUrl(url)}
           />
         )}
 
