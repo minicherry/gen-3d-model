@@ -23,10 +23,10 @@ export interface GenerateTaskDetailResponse {
 
 export const generateTextTo3D = async (payload: any) => {
   const response = await axiosInstance.post('/text-to-3d', payload);
-  return (response as GenerateTaskCreateResponse).result;
+  return (response as unknown as GenerateTaskCreateResponse).result;
 }
 
 export const getGenerate = async (taskId: string) => {
   const response = await axiosInstance.get(`/text-to-3d/${taskId}`);
-  return response as GenerateTaskDetailResponse;
+  return response as unknown as GenerateTaskDetailResponse;
 }
