@@ -1,0 +1,26 @@
+.header {
+  height: 64px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.backLink {
+  font-size: 16px;
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  line-height: 24px;
+  gap: 8px;
+  cursor: pointer;
+  &:hover {
+    color: hsl(var(--foreground));
+  }
+}
+
+.headerPlaceholder {
+  width: 64px;
+}

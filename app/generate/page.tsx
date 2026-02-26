@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Package, Box, Grid3X3 } from 'lucide-react'
 import GenModel from '@/components/generate/genModel'
 import GenTexture from '@/components/generate/genTexture'
+import Header from '@/components/genShow/header'
 import styles from './page.module.scss'
 const Generate = () => {
   const [isGenerating, setIsGenerating] = useState(false)
@@ -23,14 +24,7 @@ const Generate = () => {
 
   return (
     <div className={styles.page}>
-      <header className={styles.header}>
-        <Link href="/" className={styles.backLink}>
-          返回首页
-        </Link>
-        <h1 className={styles.title}>3D 生成</h1>
-        <div className={styles.headerPlaceholder} />
-      </header>
-
+      <Header />
       <main className={styles.main}>
         <div className={styles.leftMenu}>
           <div

@@ -5,34 +5,6 @@
   display: flex;
   flex-direction: column;
 
-  .header {
-    height: 64px;
-    padding: 0 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .backLink {
-    font-size: 14px;
-    color: hsl(var(--muted-foreground));
-    text-decoration: none;
-
-    &:hover {
-      color: hsl(var(--foreground));
-    }
-  }
-
-  .title {
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  .headerPlaceholder {
-    width: 64px;
-  }
-
   .main {
     display: flex;
     width: 100%;

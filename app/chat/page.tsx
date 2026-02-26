@@ -5,16 +5,17 @@ import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Chat } from "@/components/chat";
+import styles from "./page.module.scss";
 
 export default function ChatPage() {
   return (
-    <main className="min-h-screen flex flex-col items-center">
-      <div className="flex-1 w-full flex flex-col gap-20 items-center">
-        <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
-          <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
-            <div className="flex gap-5 items-center font-semibold">
+    <main className={styles.chatPage}>
+      <div className={styles.pageInner}>
+        <nav className={styles.topNav}>
+          <div className={styles.navInner}>
+            <div className={styles.navLeft}>
               <Link href={"/"}>Next.js Supabase Starter</Link>
-              <div className="flex items-center gap-2">
+              <div className={styles.deployWrap}>
                 <DeployButton />
               </div>
             </div>
@@ -29,7 +30,7 @@ export default function ChatPage() {
         </nav>
         <Suspense
           fallback={
-            <div className="w-full max-w-2xl mx-auto h-[600px] rounded-2xl border border-border/40 bg-background/60 animate-pulse" />
+            <div className={styles.chatFallback} />
           }
         >
           <Chat />
