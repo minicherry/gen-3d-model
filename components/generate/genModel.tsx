@@ -12,7 +12,7 @@ import {
   Sparkles,
   AlertCircle
 } from 'lucide-react'
-import { generateTextTo3D, getGenerate } from '@/lib/api/generate'
+import { generateTextTo3D } from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
 interface GenModelProps {
@@ -36,10 +36,7 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
     }
     try {
       const response = await generateTextTo3D(payload)
-
-      const taskId = response
-      const getResponse = await getGenerate(taskId)
-      onModelUrlChange?.(getResponse?.model_urls?.glb ?? '')
+      onModelUrlChange?.(response?.model_urls?.glb ?? '')
     } catch (error) {
       console.error(error)
     }

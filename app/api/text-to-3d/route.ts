@@ -44,18 +44,45 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing task id' }, { status: 500 })
     }
 
+    const getInfo = await fetch(`${MESHY_BASE_URL}/text-to-3d/${taskId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${MESHY_API_KEY}`
+      },
+      cache: 'no-store'
+    })
+
+    if (!getInfo.ok) {
+      const errorText = await getInfo.text()
+      return NextResponse.json(
+        { error: errorText || `Upstream error: ${getInfo.status}` },
+        { status: getInfo.status }
+      )
+    }
+    const getInfoData = await getInfo.json()
+    console.log(getInfoData)
+    const modelUrls = getModelUrls(getInfoData)
+    const generatedAt = new Date().toISOString()
+    const resultId = getInfoData?.id ?? null
     const supabase = await createClient()
     await supabase.from('generate_records').upsert(
       {
         task_id: taskId,
-        result_id: null,
-        model_urls: {},
-        generated_at: new Date().toISOString()
+        result_id: resultId,
+        model_urls: modelUrls,
+        generated_at: generatedAt
       },
       { onConflict: 'task_id' }
     )
 
-    return NextResponse.json({ taskId })
+    return NextResponse.json({
+      task_id: taskId,
+      id: resultId ?? taskId,
+      status: data?.status,
+      model_urls: modelUrls,
+      generated_at: generatedAt
+    })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Unknown error' },
@@ -91,6 +118,7 @@ export async function GET(req: Request) {
     }
 
     const data = await upstream.json()
+    console.log(data)
     const modelUrls = getModelUrls(data)
     const generatedAt = new Date().toISOString()
     const resultId = data?.id ?? null

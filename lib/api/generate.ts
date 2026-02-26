@@ -1,3 +1,5 @@
+import axiosInstance from '@/lib/request'
+
 export interface TextTo3DPayload {
   mode: 'preview' | 'refine'
   prompt?: string
@@ -22,28 +24,13 @@ export interface GenerateTaskDetailResponse {
 }
 
 export const generateTextTo3D = async (payload: TextTo3DPayload) => {
-  const response = await fetch('/api/text-to-3d', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-
-  if (!response.ok) {
-    throw new Error(`Create task failed: ${response.status}`)
-  }
-
-  const data = (await response.json()) as { taskId: string }
-  return data.taskId
+  const data = (await axiosInstance.post('/api/text-to-3d', payload)) as GenerateTaskDetailResponse
+  return data
 }
 
 export const getGenerate = async (taskId: string) => {
-  const response = await fetch(
+  const response = (await axiosInstance.get(
     `/api/text-to-3d?taskId=${encodeURIComponent(taskId)}`
-  )
-
-  if (!response.ok) {
-    throw new Error(`Get task failed: ${response.status}`)
-  }
-
-  return (await response.json()) as GenerateTaskDetailResponse
+  )) as GenerateTaskDetailResponse
+  return response
 }

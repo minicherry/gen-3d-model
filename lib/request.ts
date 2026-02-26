@@ -3,8 +3,8 @@ import axios from 'axios';
 
 // 创建实例
 const axiosInstance = axios.create({
-  baseURL: 'https://api.meshy.ai/openapi/v2/', // 从环境变量读取
-  timeout: 10000,
+  baseURL: '', // 从环境变量读取
+  timeout: 60*1000,
   headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer msy_dummy_api_key_for_test_mode_12345678` }
 });
 // 请求拦截器
