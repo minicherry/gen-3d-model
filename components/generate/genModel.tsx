@@ -39,7 +39,7 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
 
       const taskId = response
       const getResponse = await getGenerate(taskId)
-      onModelUrlChange?.(getResponse.model_urls.glb)
+      onModelUrlChange?.(getResponse?.model_urls?.glb)
     } catch (error) {
       console.error(error)
     }

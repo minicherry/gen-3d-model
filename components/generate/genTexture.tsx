@@ -41,7 +41,7 @@ const GenModel = ({ onModelUrlChange }: GenTextureProps) => {
       console.log(response)
       const taskId = response
       const getResponse = await getGenerate(taskId)
-      onModelUrlChange?.(getResponse.model_urls.glb)
+      onModelUrlChange?.(getResponse?.model_urls?.glb)
       console.log(getResponse)
     } catch (error) {
       console.error(error)
