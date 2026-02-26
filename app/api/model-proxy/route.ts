@@ -16,7 +16,7 @@ export async function GET(req: Request) {
   }
 
   // Only allow Meshy asset host for safety.
-  if (parsedUrl.hostname !== 'assets.meshy.ai') {
+  if (parsedUrl.hostname !== 'assets.meshy.ai' && parsedUrl.hostname !== 'yamlbkhubodoxxaavtva.supabase.co') {
     return NextResponse.json({ error: 'Host not allowed' }, { status: 403 })
   }
 
