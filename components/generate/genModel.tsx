@@ -12,7 +12,7 @@ import {
   Sparkles,
   AlertCircle
 } from 'lucide-react'
-import { generateTextTo3D } from '@/lib/api/generate'
+import { generateTextTo3D, TextTo3DPayload } from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
 interface GenModelProps {
@@ -30,7 +30,7 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
     if (mode === 'image' && !uploadedFileName) return
 
     setIsGenerating(true)
-    const payload = {
+    const payload: TextTo3DPayload = {
       mode: 'preview',
       prompt: prompt
     }

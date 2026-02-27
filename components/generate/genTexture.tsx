@@ -12,7 +12,7 @@ import {
   Sparkles,
   AlertCircle
 } from 'lucide-react'
-import { generateTextTo3D } from '@/lib/api/generate'
+import { generateTextTo3D, TextTo3DPayload } from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
 interface GenTextureProps {
@@ -31,7 +31,7 @@ const GenModel = ({ onModelUrlChange }: GenTextureProps) => {
     if (mode === 'image' && !uploadedFileName) return
 
     setIsGenerating(true)
-    const payload = {
+    const payload: TextTo3DPayload = {
       mode: 'refine',
       preview_task_id: '019c93e3-598a-7ee8-8b36-5221fc47b1bb',
       texture_prompt: prompt
