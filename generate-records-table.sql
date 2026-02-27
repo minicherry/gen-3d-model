@@ -1,6 +1,10 @@
 create table if not exists public.generate_records (
   task_id text primary key,
   result_id text,
+  mode text not null default '',
+  texture_prompt text not null default '',
+  preview_task_id text not null default '',
+  prompt text not null default '',
   source_model_urls jsonb not null default '{}'::jsonb,
   model_urls jsonb not null default '{}'::jsonb,
   generated_at timestamptz not null default now()
@@ -9,6 +13,14 @@ alter table public.generate_records
 add column if not exists result_id text;
 alter table public.generate_records
 add column if not exists source_model_urls jsonb not null default '{}'::jsonb;
+alter table public.generate_records
+add column if not exists mode text not null default '';
+alter table public.generate_records
+add column if not exists texture_prompt text not null default '';
+alter table public.generate_records
+add column if not exists preview_task_id text not null default '';
+alter table public.generate_records
+add column if not exists prompt text not null default '';
 
 alter table public.generate_records enable row level security;
 

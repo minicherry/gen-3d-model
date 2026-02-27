@@ -156,6 +156,10 @@ export async function POST(req: Request) {
       {
         task_id: taskId,
         result_id: resultId,
+        mode: payload.mode ?? '',
+        texture_prompt: payload.texture_prompt ?? '',
+        preview_task_id: payload.preview_task_id ?? '',
+        prompt: payload.prompt ?? '',
         source_model_urls: sourceModelUrls,
         model_urls: ownModelUrls,
         generated_at: generatedAt
@@ -166,6 +170,10 @@ export async function POST(req: Request) {
     return NextResponse.json({
       task_id: taskId,
       id: resultId ?? taskId,
+      mode: payload.mode,
+      texture_prompt: payload.texture_prompt||'',
+      preview_task_id: payload.preview_task_id||'',
+      prompt: payload.prompt||'',
       status,
       model_urls: ownModelUrls,
       source_model_urls: sourceModelUrls,
@@ -185,7 +193,6 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const taskId = searchParams.get('taskId')?.trim()
-    const source = searchParams.get('source')
 
     if (!taskId) {
       return NextResponse.json({ error: 'taskId is required' }, { status: 400 })
@@ -193,73 +200,27 @@ export async function GET(req: Request) {
 
     const supabase = await createClient()
 
-    if (source === 'db') {
-      const { data, error } = await supabase
-        .from('generate_records')
-        .select('task_id, result_id, model_urls, generated_at')
-        .eq('task_id', taskId)
-        .single()
+    const { data, error } = await supabase
+      .from('generate_records')
+      .select('task_id, result_id, model_urls, source_model_urls, generated_at')
+      .eq('task_id', taskId)
+      .single()
 
-      if (error) {
-        return NextResponse.json({ error: error.message }, { status: 500 })
-      }
-
-      return NextResponse.json({
-        task_id: data.task_id,
-        id: data.result_id ?? data.task_id,
-        model_urls: data.model_urls ?? {},
-        generated_at: data.generated_at
-      })
+    if (error) {
+      const status = error.code === 'PGRST116' ? 404 : 500
+      return NextResponse.json({ error: error.message }, { status })
     }
-
-    const upstream = await fetch(`${MESHY_BASE_URL}/text-to-3d/${taskId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${MESHY_API_KEY}`
-      },
-      cache: 'no-store'
-    })
-
-    if (!upstream.ok) {
-      const errorText = await upstream.text()
-      return NextResponse.json(
-        { error: errorText || `Upstream error: ${upstream.status}` },
-        { status: upstream.status }
-      )
-    }
-
-    const data = await upstream.json()
-    const status = data?.status as string | undefined
-    const sourceModelUrls = getModelUrls(data)
-    const generatedAt = new Date().toISOString()
-    const resultId = data?.id ?? null
-    const { modelUrls: ownModelUrls, uploadErrors } =
-      await persistModelUrlsToStorage(
-      supabase,
-      taskId,
-      sourceModelUrls
-    )
-    await supabase.from('generate_records').upsert(
-      {
-        task_id: taskId,
-        result_id: resultId,
-        source_model_urls: sourceModelUrls,
-        model_urls: ownModelUrls,
-        generated_at: generatedAt
-      },
-      { onConflict: 'task_id' }
-    )
 
     return NextResponse.json({
-      task_id: taskId,
-      id: resultId ?? taskId,
-      status,
-      model_urls: ownModelUrls,
-      source_model_urls: sourceModelUrls,
-      upload_errors: uploadErrors,
-      generated_at: generatedAt,
-      record_url: `/api/text-to-3d?taskId=${encodeURIComponent(taskId)}&source=db`
+      task_id: data.task_id,
+      id: data.result_id ?? data.task_id,
+      model_urls: data.model_urls ?? {},
+      source_model_urls: data.source_model_urls ?? {},
+      generated_at: data.generated_at,
+      mode: data.mode,
+      texture_prompt: data.texture_prompt,
+      preview_task_id: data.preview_task_id,
+      prompt: data.prompt,
     })
   } catch (error) {
     return NextResponse.json(
