@@ -77,7 +77,7 @@ export async function POST(req: Request) {
       await persistModelFromUtil(supabase, taskId, sourceModelUrls)
 
     const textureResults = await Promise.all(
-      sourceTextureUrls.map(async (item: Record<string, string>) => {
+      (sourceTextureUrls as Array<Record<string, string | undefined>>).map(async (item: Record<string, string | undefined>) => {
         const { imageUrls: ownImageUrls } = await persistImageUrlsToStorage(
           supabase,
           taskId,
