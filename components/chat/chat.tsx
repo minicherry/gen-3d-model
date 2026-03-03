@@ -1,45 +1,76 @@
 'use client'
 
-import { DefaultChatTransport } from 'ai'
-import { useChat } from '@ai-sdk/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { FormEvent, useEffect, useRef, useState } from 'react'
 import { Send, User, Bot, Sparkles } from 'lucide-react'
 import styles from './chat.module.scss'
 
+type ChatMessage = {
+  id: string
+  role: 'user' | 'assistant'
+  text: string
+}
+
+const parseJsonSafe = <T,>(text: string): T | null => {
+  try {
+    return JSON.parse(text) as T
+  } catch {
+    return null
+  }
+}
+
 export function Chat() {
   const [input, setInput] = useState('')
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({
-      api: '/api/chat',
-      prepareSendMessagesRequest: ({ messages }) => {
-        const latestUserMessage = [...messages]
-          .reverse()
-          .find((message) => message.role === 'user')
-
-        const prompt =
-          latestUserMessage?.parts
-            ?.filter((part) => part.type === 'text')
-            .map((part) => part.text)
-            .join('')
-            .trim() ?? ''
-
-        return {
-          body: { prompt }
-        }
-      }
-    })
-  })
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
-  const isLoading = status === 'submitted' || status === 'streaming'
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const text = input.trim()
     if (!text || isLoading) return
-    sendMessage({ text })
+
+    const userMessage: ChatMessage = {
+      id: `${Date.now()}-user`,
+      role: 'user',
+      text
+    }
+    setMessages((prev) => [...prev, userMessage])
     setInput('')
+
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: text })
+      })
+      const rawText = await response.text()
+      const data = parseJsonSafe<{ reply?: string; error?: string }>(rawText)
+
+      if (!response.ok) {
+        throw new Error(data?.error || rawText || 'chat request failed')
+      }
+
+      const assistantMessage: ChatMessage = {
+        id: `${Date.now()}-assistant`,
+        role: 'assistant',
+        text: data?.reply?.trim() || rawText.trim() || '已收到请求，但暂时没有返回内容。'
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+    } catch (error) {
+      const assistantMessage: ChatMessage = {
+        id: `${Date.now()}-assistant-error`,
+        role: 'assistant',
+        text: `请求失败：${
+          error instanceof Error ? error.message : '未知错误'
+        }`
+      }
+      setMessages((prev) => [...prev, assistantMessage])
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -92,12 +123,6 @@ export function Chat() {
           </div>
         ) : (
           messages.map((message) => {
-            const text =
-              message.parts
-                ?.filter((part) => part.type === 'text')
-                .map((part) => part.text)
-                .join('') ?? ''
-
             return (
               <div
                 key={message.id}
@@ -121,7 +146,7 @@ export function Chat() {
                     message.role === 'user' ? styles.bubbleUser : styles.bubbleBot
                   }`}
                 >
-                  {text}
+                  {message.text}
                 </div>
               </div>
             )

@@ -229,6 +229,7 @@
         border: 1px solid hsl(var(--border) / 0.25);
         border-top-left-radius: 0.25rem;
         background: hsl(var(--muted) / 0.3);
+        word-break: break-word;
       }
     }
 

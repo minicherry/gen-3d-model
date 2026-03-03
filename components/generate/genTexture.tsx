@@ -139,7 +139,7 @@ const GenTexture = ({ onModelUrlChange }: GenTextureProps) => {
                 <span>越详细的描述效果越好</span>
                 <button
                   type="button"
-                  onClick={() => setPrompt('银色金属材质')}
+                  onClick={() => setPrompt('红色杯身，木质纹理，棕色杯把手')}
                   className={styles.exampleBtn}
                 >
                   试一试示例

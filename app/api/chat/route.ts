@@ -1,21 +1,139 @@
-// app/api/chat/route.ts
-import { streamText } from 'ai';
-import { deepseek } from '@/lib/ai-provider'; // 导入自定义提供商
+import { NextResponse } from 'next/server'
+import { DynamicTool } from 'langchain/tools'
+import { initializeAgentExecutorWithOptions } from 'langchain/agents'
+import { ChatOpenAI } from '@langchain/openai'
+import { POST as textTo3DPost } from '@/app/api/text-to-3d/route'
+
+const wantsGenerateModel = (text: string) =>
+  /(生成|建模|3d|模型|model|generate)/i.test(text)
+
+const parseJsonSafe = <T>(text: string): T | null => {
+  try {
+    return JSON.parse(text) as T
+  } catch {
+    return null
+  }
+}
 
 export async function POST(req: Request) {
-    const body = await req.json();
-    const prompt = typeof (body as { prompt?: unknown }).prompt === 'string'
-        ? (body as { prompt: string }).prompt.trim()
-        : '';
+  try {
+    const body = (await req.json()) as { prompt?: unknown }
+    const prompt = typeof body?.prompt === 'string' ? body.prompt.trim() : ''
 
     if (!prompt) {
-        return new Response('Prompt is required', { status: 400 });
+      return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
     }
 
-    // 使用自定义的 deepseek 提供商
-    const result = await streamText({
-        model: deepseek.chat('deepseek-chat'), // 强制使用 chat/completions 兼容接口
-        prompt,
-    });
-    return result.toUIMessageStreamResponse();
+    const callTextTo3D = async (input: string) => {
+      const internalRequest = new Request(new URL('/api/text-to-3d', req.url), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mode: 'preview',
+          prompt: input
+        })
+      })
+      const response = await textTo3DPost(internalRequest)
+      const rawText = await response.text()
+      const data = parseJsonSafe<{
+        task_id?: string
+        status?: string
+        model_urls?: Record<string, string>
+        record_url?: string
+        error?: string
+      }>(rawText)
+
+      if (!response.ok) {
+        throw new Error(
+          `text-to-3d failed: ${
+            data?.error ??
+            rawText.slice(0, 200) ??
+            `HTTP ${response.status}`
+          }`
+        )
+      }
+
+      if (!data) {
+        throw new Error(
+          `text-to-3d returned non-JSON response: ${rawText.slice(0, 200)}`
+        )
+      }
+      const modelUrl = data.model_urls?.glb ?? ''
+
+      return {
+        task_id: data.task_id ?? '',
+        status: data.status ?? '',
+        model_url: modelUrl,
+        record_url: data.record_url ?? ''
+      }
+    }
+
+    const generateModelTool = new DynamicTool({
+      name: 'generate_model_from_text',
+      description:
+        '当用户要求生成3D模型时使用。输入为模型描述文本；直接调用 text-to-3d 接口生成模型。',
+      func: async (input: string) => {
+        const result = await callTextTo3D(input)
+        return JSON.stringify(result)
+      }
+    })
+
+    const llm = new ChatOpenAI({
+      model: 'deepseek-chat',
+      apiKey: process.env.DEEPSEEK_API_KEY,
+      configuration: { baseURL: 'https://api.deepseek.com' },
+      temperature: 0.2
+    })
+
+    const tools = [generateModelTool]
+    const executor = await initializeAgentExecutorWithOptions(tools, llm, {
+      agentType: 'openai-functions',
+      verbose: false,
+      agentArgs: {
+        prefix:
+          '你是3D模型助手。若用户明确表达“生成3D模型/建模/做一个模型”等意图，优先调用 generate_model_from_text 工具。若只是闲聊或问答，直接文字回答。'
+      }
+    })
+
+    let result: { output?: unknown }
+    try {
+      result = await executor.invoke({ input: prompt })
+    } catch (invokeError) {
+      const message =
+        invokeError instanceof Error ? invokeError.message : String(invokeError)
+      const isInsufficientBalance =
+        /402|insufficient balance|余额不足/i.test(message)
+
+      if (!isInsufficientBalance) {
+        throw invokeError
+      }
+
+      // Fallback mode when LLM billing is unavailable.
+      if (wantsGenerateModel(prompt)) {
+        const modelResult = await callTextTo3D(prompt)
+        return NextResponse.json({
+          reply: `检测到模型生成需求，已切换到直连模式并创建任务：${JSON.stringify(
+            modelResult
+          )}`
+        })
+      }
+
+      return NextResponse.json({
+        reply:
+          '当前 LLM 账户余额不足（402），已进入降级模式。请直接描述你想生成的3D模型，我会直连创建任务。'
+      })
+    }
+
+    const reply =
+      typeof result.output === 'string'
+        ? result.output
+        : JSON.stringify(result.output)
+
+    return NextResponse.json({ reply })
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    )
+  }
 }

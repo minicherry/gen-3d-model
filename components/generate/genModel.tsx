@@ -161,11 +161,7 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
                 <span>越详细的描述效果越好</span>
                 <button
                   type="button"
-                  onClick={() =>
-                    setPrompt(
-                      '一个低多边形风格的太空头盔，银色金属材质，蓝色发光面罩'
-                    )
-                  }
+                  onClick={() => setPrompt('一个木桶形状的水杯')}
                   className={styles.exampleBtn}
                 >
                   试一试示例
