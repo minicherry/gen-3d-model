@@ -69,7 +69,7 @@ export async function POST(req: Request) {
     const sourceModelUrls = getModelUrls(getInfoData)
     const sourceTextureUrls = getInfoData?.texture_urls ?? []
     const sourceThumbnailUrl = getInfoData?.thumbnail_url ?? ''
-    const textureImageUrls: Array<Record<string, string>> = []
+    const textureImageUrls: Array<Record<string, string | undefined>> = []
     const generatedAt = new Date().toISOString()
     const resultId = getInfoData?.id ?? null
     const supabase = await createClient()
