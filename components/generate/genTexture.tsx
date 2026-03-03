@@ -7,12 +7,13 @@ import { Label } from '@/components/ui/label'
 import {
   Wand2,
   Image as ImageIcon,
-  Upload,
   Loader2,
   Sparkles,
   AlertCircle
 } from 'lucide-react'
-import { generateTextTo3D, TextTo3DPayload } from '@/lib/api/generate'
+import { Upload, message } from 'antd'
+import type { RcFile } from 'antd/es/upload'
+import { generateTextTo3D, TextTo3DPayload, generateImageTo3D } from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
 interface GenTextureProps {
@@ -46,7 +47,7 @@ const GenTexture = ({ onModelUrlChange }: GenTextureProps) => {
       setIsGenerating(false)
     }, 3000)
   }
-  const getBase64 = (img: FileType, callback: (url: string) => void) => {
+  const getBase64 = (img: RcFile, callback: (url: string) => void) => {
     const reader = new FileReader()
     reader.addEventListener('load', () => callback(reader.result as string))
     reader.readAsDataURL(img)

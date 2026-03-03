@@ -12,7 +12,8 @@ import {
   AlertCircle,
   Plus
 } from 'lucide-react'
-import { Upload } from 'antd'
+import { Upload, message } from 'antd'
+import type { RcFile } from 'antd/es/upload'
 import {
   generateTextTo3D,
   TextTo3DPayload,
@@ -51,7 +52,7 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
       setIsGenerating(false)
     }, 3000)
   }
-  const getBase64 = (img: FileType, callback: (url: string) => void) => {
+  const getBase64 = (img: RcFile, callback: (url: string) => void) => {
     const reader = new FileReader()
     reader.addEventListener('load', () => callback(reader.result as string))
     reader.readAsDataURL(img)
