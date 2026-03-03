@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { persistModelUrlsToStorage as persistModelFromUtil, persistImageUrlToStorage, persistImageUrlsToStorage } from '@/lib/server/util'
 
 type ModelUrls = Record<string, string | undefined>
+type ImageUrls = Record<string, string | undefined>
 type UploadErrors = Record<string, string>
 
 const MESHY_BASE_URL = 'https://api.meshy.ai/openapi/v1'
@@ -67,9 +68,9 @@ export async function POST(req: Request) {
     const getInfoData = await getInfo.json()
     const status = getInfoData?.status as string | undefined
     const sourceModelUrls = getModelUrls(getInfoData)
-    const sourceTextureUrls = getInfoData?.texture_urls ?? []
+    const sourceTextureUrls: ImageUrls[] = Array.isArray(getInfoData?.texture_urls) ? getInfoData.texture_urls : []
     const sourceThumbnailUrl = getInfoData?.thumbnail_url ?? ''
-    const textureImageUrls: Array<Record<string, string | undefined>> = []
+    const textureImageUrls: ImageUrls[] = []
     const generatedAt = new Date().toISOString()
     const resultId = getInfoData?.id ?? null
     const supabase = await createClient()
@@ -77,7 +78,7 @@ export async function POST(req: Request) {
       await persistModelFromUtil(supabase, taskId, sourceModelUrls)
 
     const textureResults = await Promise.all(
-      (sourceTextureUrls as Array<Record<string, string | undefined>>).map(async (item: Record<string, string | undefined>) => {
+      sourceTextureUrls.map(async (item: ImageUrls) => {
         const { imageUrls: ownImageUrls } = await persistImageUrlsToStorage(
           supabase,
           taskId,
