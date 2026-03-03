@@ -7,12 +7,18 @@ import { Label } from '@/components/ui/label'
 import {
   Wand2,
   Image as ImageIcon,
-  Upload,
   Loader2,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Plus
 } from 'lucide-react'
-import { generateTextTo3D, TextTo3DPayload } from '@/lib/api/generate'
+import { Upload } from 'antd'
+import {
+  generateTextTo3D,
+  TextTo3DPayload,
+  generateImageTo3D,
+  ImageTo3DPayload
+} from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
 interface GenModelProps {
@@ -25,9 +31,10 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
   const [prompt, setPrompt] = useState('')
   const [negativePrompt, setNegativePrompt] = useState('')
   const [uploadedFileName, setUploadedFileName] = useState('')
-  const handleGenerate = async () => {
+  const [imageTo3DUrl, setImageTo3DUrl] = useState('')
+
+  const handleGenerateText = async () => {
     if (mode === 'text' && !prompt.trim()) return
-    if (mode === 'image' && !uploadedFileName) return
 
     setIsGenerating(true)
     const payload: TextTo3DPayload = {
@@ -44,11 +51,67 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
       setIsGenerating(false)
     }, 3000)
   }
+  const getBase64 = (img: FileType, callback: (url: string) => void) => {
+    const reader = new FileReader()
+    reader.addEventListener('load', () => callback(reader.result as string))
+    reader.readAsDataURL(img)
+  }
+  const beforeUpload = (file: RcFile) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!')
+    }
+    return isJpgOrPng
+  }
+  const uploadImage = (options: any) => {
+    getBase64(options.file, (url) => {
+      setImageTo3DUrl(url)
+    })
+  }
+  const handleGenerateImage = async () => {
+    if (mode === 'image' && !imageTo3DUrl) return
 
+    setIsGenerating(true)
+    const payload: TextTo3DPayload = {
+      image_url: imageTo3DUrl,
+      should_texture: false
+    }
+    try {
+      const response = await generateImageTo3D(payload)
+      onModelUrlChange?.(response?.model_urls?.glb ?? '')
+    } catch (error) {
+      console.error(error)
+    }
+    setTimeout(() => {
+      setIsGenerating(false)
+    }, 3000)
+  }
+  const genImageButton = (
+    <Button
+      className={styles.generateBtn}
+      onClick={handleGenerateImage}
+      disabled={
+        isGenerating ||
+        (mode === 'text' ? prompt.trim().length === 0 : !imageTo3DUrl)
+      }
+    >
+      {isGenerating ? (
+        <>
+          <Loader2 className={styles.spinner} />
+          生成中...
+        </>
+      ) : (
+        <>
+          <Sparkles className={styles.spinner} />
+          开始生成
+        </>
+      )}
+    </Button>
+  )
   return (
     <div className={styles.leftPanel}>
       <div className={styles.intro}>
-        <h1 className={styles.introTitle}>创作中心</h1>
+        <h1 className={styles.introTitle}>生成模型</h1>
         <p className={styles.introDesc}>配置参数以生成独特的 3D 资产</p>
       </div>
 
@@ -113,22 +176,30 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
           <div className={styles.formGroup}>
             <div className={styles.uploadCard}>
               <div className={styles.uploadIconWrap}>
-                <Upload className={styles.uploadIcon} />
+                <Upload
+                  name="avatar"
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  showUploadList={false}
+                  customRequest={uploadImage}
+                  beforeUpload={beforeUpload}
+                >
+                  {imageTo3DUrl ? (
+                    <img
+                      draggable={false}
+                      src={imageTo3DUrl}
+                      alt="avatar"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  ) : (
+                    <Plus />
+                  )}
+                </Upload>
               </div>
-              <h3 className={styles.uploadTitle}>点击或拖拽上传图片</h3>
-              <p className={styles.uploadDesc}>支持 JPG, PNG 格式，最大 10MB</p>
-              <input
-                type="file"
-                accept="image/png,image/jpeg"
-                aria-label="上传用于生成 3D 的图片"
-                className={styles.fileInput}
-                onChange={(e) =>
-                  setUploadedFileName(e.target.files?.[0]?.name ?? '')
-                }
-              />
-              {uploadedFileName ? (
-                <p className={styles.fileName}>已选择：{uploadedFileName}</p>
-              ) : null}
             </div>
             <div className={styles.noteBox}>
               <AlertCircle className={styles.noteIcon} />
@@ -140,26 +211,30 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
         )}
       </div>
       <div className={styles.actionFooter}>
-        <Button
-          className={styles.generateBtn}
-          onClick={handleGenerate}
-          disabled={
-            isGenerating ||
-            (mode === 'text' ? prompt.trim().length === 0 : !uploadedFileName)
-          }
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className={styles.spinner} />
-              生成中...
-            </>
-          ) : (
-            <>
-              <Sparkles className={styles.spinner} />
-              开始生成
-            </>
-          )}
-        </Button>
+        {mode === 'text' ? (
+          <Button
+            className={styles.generateBtn}
+            onClick={handleGenerateText}
+            disabled={
+              isGenerating ||
+              (mode === 'text' ? prompt.trim().length === 0 : !uploadedFileName)
+            }
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className={styles.spinner} />
+                生成中...
+              </>
+            ) : (
+              <>
+                <Sparkles className={styles.spinner} />
+                开始生成
+              </>
+            )}
+          </Button>
+        ) : (
+          genImageButton
+        )}
         <div className={styles.statusRow}>
           <span>预计消耗: 4 积分</span>
           <span>剩余积分: 120</span>

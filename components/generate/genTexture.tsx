@@ -19,21 +19,20 @@ interface GenTextureProps {
   onModelUrlChange?: (url: string) => void
 }
 
-const GenModel = ({ onModelUrlChange }: GenTextureProps) => {
+const GenTexture = ({ onModelUrlChange }: GenTextureProps) => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [mode, setMode] = useState<'text' | 'image'>('text')
   const [prompt, setPrompt] = useState('')
   const [negativePrompt, setNegativePrompt] = useState('')
   const [uploadedFileName, setUploadedFileName] = useState('')
-
-  const handleGenerate = async () => {
+  const [imageTo3DUrl, setImageTo3DUrl] = useState('')
+  const handleGenerateText = async () => {
     if (mode === 'text' && !prompt.trim()) return
-    if (mode === 'image' && !uploadedFileName) return
 
     setIsGenerating(true)
     const payload: TextTo3DPayload = {
       mode: 'refine',
-      preview_task_id: '019c93e3-598a-7ee8-8b36-5221fc47b1bb',
+      preview_task_id: '019cad6b-df02-7a4a-913f-416ced30b28a',
       texture_prompt: prompt
     }
     try {
@@ -47,7 +46,40 @@ const GenModel = ({ onModelUrlChange }: GenTextureProps) => {
       setIsGenerating(false)
     }, 3000)
   }
+  const getBase64 = (img: FileType, callback: (url: string) => void) => {
+    const reader = new FileReader()
+    reader.addEventListener('load', () => callback(reader.result as string))
+    reader.readAsDataURL(img)
+  }
+  const beforeUpload = (file: RcFile) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png'
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!')
+    }
+    return isJpgOrPng
+  }
+  const uploadImage = (options: any) => {
+    getBase64(options.file, (url) => {
+      setImageTo3DUrl(url)
+    })
+  }
+  const handleGenerateImage = async () => {
+    if (mode === 'image' && !imageTo3DUrl) return
 
+    setIsGenerating(true)
+    const payload: TextTo3DPayload = {
+      image_url: imageTo3DUrl
+    }
+    try {
+      const response = await generateImageTo3D(payload)
+      onModelUrlChange?.(response?.model_urls?.glb ?? '')
+    } catch (error) {
+      console.error(error)
+    }
+    setTimeout(() => {
+      setIsGenerating(false)
+    }, 3000)
+  }
   return (
     <div className={styles.leftPanel}>
       <div className={styles.intro}>
@@ -112,22 +144,30 @@ const GenModel = ({ onModelUrlChange }: GenTextureProps) => {
           <div className={styles.formGroup}>
             <div className={styles.uploadCard}>
               <div className={styles.uploadIconWrap}>
-                <Upload className={styles.uploadIcon} />
+                <Upload
+                  name="avatar"
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  showUploadList={false}
+                  customRequest={uploadImage}
+                  beforeUpload={beforeUpload}
+                >
+                  {imageTo3DUrl ? (
+                    <img
+                      draggable={false}
+                      src={imageTo3DUrl}
+                      alt="avatar"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain'
+                      }}
+                    />
+                  ) : (
+                    <Plus />
+                  )}
+                </Upload>
               </div>
-              <h3 className={styles.uploadTitle}>点击或拖拽上传图片</h3>
-              <p className={styles.uploadDesc}>支持 JPG, PNG 格式，最大 10MB</p>
-              <input
-                type="file"
-                accept="image/png,image/jpeg"
-                aria-label="上传用于生成 3D 的图片"
-                className={styles.fileInput}
-                onChange={(e) =>
-                  setUploadedFileName(e.target.files?.[0]?.name ?? '')
-                }
-              />
-              {uploadedFileName ? (
-                <p className={styles.fileName}>已选择：{uploadedFileName}</p>
-              ) : null}
             </div>
             <div className={styles.noteBox}>
               <AlertCircle className={styles.noteIcon} />
@@ -141,7 +181,7 @@ const GenModel = ({ onModelUrlChange }: GenTextureProps) => {
       <div className={styles.actionFooter}>
         <Button
           className={styles.generateBtn}
-          onClick={handleGenerate}
+          onClick={handleGenerateText}
           disabled={
             isGenerating ||
             (mode === 'text' ? prompt.trim().length === 0 : !uploadedFileName)
@@ -168,4 +208,4 @@ const GenModel = ({ onModelUrlChange }: GenTextureProps) => {
   )
 }
 
-export default GenModel
+export default GenTexture

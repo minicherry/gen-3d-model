@@ -7,7 +7,9 @@ export interface TextTo3DPayload {
   texture_prompt?: string
   [key: string]: unknown
 }
-
+export interface ImageTo3DPayload {
+  image_url: string
+}
 export interface ModelUrls {
   glb?: string
   usdz?: string
@@ -27,7 +29,10 @@ export const generateTextTo3D = async (payload: TextTo3DPayload) => {
   const data = (await axiosInstance.post('/api/text-to-3d', payload)) as GenerateTaskDetailResponse
   return data
 }
-
+export const generateImageTo3D = async (payload: ImageTo3DPayload) => {
+  const data = (await axiosInstance.post('/api/image-to-3d', payload)) as GenerateTaskDetailResponse
+  return data
+}
 export const getGenerate = async (taskId: string) => {
   const response = (await axiosInstance.get(
     `/api/text-to-3d?taskId=${encodeURIComponent(taskId)}`
