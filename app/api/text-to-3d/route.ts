@@ -170,7 +170,9 @@ export async function GET(req: Request) {
 
     const { data, error } = await supabase
       .from('generate_records')
-      .select('task_id, result_id, model_urls, source_model_urls, generated_at')
+      .select(
+        'task_id, result_id, model_urls, source_model_urls, generated_at, mode, texture_prompt, preview_task_id, prompt'
+      )
       .eq('task_id', taskId)
       .single()
 
