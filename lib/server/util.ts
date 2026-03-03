@@ -5,7 +5,7 @@ type UploadErrors = Record<string, string>
 const STORAGE_MODEL_BUCKET = process.env.SUPABASE_STORAGE_MODEL_BUCKET ?? 'generated-models'
 const STORAGE_TEXTURE_IMAGE_BUCKET = process.env.SUPABASE_STORAGE_IMAGE_BUCKET ?? 'generated-texture-images'
 const STORAGE_THUMBNAIL_IMAGE_BUCKET = process.env.SUPABASE_STORAGE_THUMBNAIL_IMAGE_BUCKET ?? 'generated-thumbnail-images'
-export const getExtension = (key?: string, url: string, contentType: string) => {
+export const getExtension = (key: string | undefined, url: string, contentType: string) => {
   const cleanUrl = url.split('?')[0] ?? ''
   const fromUrl = cleanUrl.split('.').pop()?.toLowerCase()
   if (fromUrl) return fromUrl
