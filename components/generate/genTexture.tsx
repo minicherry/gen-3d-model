@@ -13,7 +13,7 @@ import {
 } from 'lucide-react'
 import { Upload, message } from 'antd'
 import type { RcFile } from 'antd/es/upload'
-import { generateTextTo3D, TextTo3DPayload, generateImageTo3D } from '@/lib/api/generate'
+import { generateTextTo3D, TextTo3DPayload, generateImageTo3D, ImageTo3DPayload } from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
 interface GenTextureProps {
@@ -68,7 +68,7 @@ const GenTexture = ({ onModelUrlChange }: GenTextureProps) => {
     if (mode === 'image' && !imageTo3DUrl) return
 
     setIsGenerating(true)
-    const payload: TextTo3DPayload = {
+    const payload: ImageTo3DPayload = {
       image_url: imageTo3DUrl
     }
     try {

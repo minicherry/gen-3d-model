@@ -9,6 +9,7 @@ export interface TextTo3DPayload {
 }
 export interface ImageTo3DPayload {
   image_url: string
+  should_texture?: boolean
 }
 export interface ModelUrls {
   glb?: string

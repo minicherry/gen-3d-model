@@ -73,7 +73,7 @@ const GenModel = ({ onModelUrlChange }: GenModelProps) => {
     if (mode === 'image' && !imageTo3DUrl) return
 
     setIsGenerating(true)
-    const payload: TextTo3DPayload = {
+    const payload: ImageTo3DPayload = {
       image_url: imageTo3DUrl,
       should_texture: false
     }
