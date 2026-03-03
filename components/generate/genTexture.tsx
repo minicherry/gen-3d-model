@@ -9,11 +9,17 @@ import {
   Image as ImageIcon,
   Loader2,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Plus
 } from 'lucide-react'
 import { Upload, message } from 'antd'
 import type { RcFile } from 'antd/es/upload'
-import { generateTextTo3D, TextTo3DPayload, generateImageTo3D, ImageTo3DPayload } from '@/lib/api/generate'
+import {
+  generateTextTo3D,
+  TextTo3DPayload,
+  generateImageTo3D,
+  ImageTo3DPayload
+} from '@/lib/api/generate'
 import styles from './genModel.module.scss'
 
 interface GenTextureProps {
