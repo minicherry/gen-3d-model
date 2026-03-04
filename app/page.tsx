@@ -21,13 +21,13 @@ const Home = () => {
           {/* Background decoration */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          {/* <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
-            Pixso3D V2.0 现已发布
-          </div>
+            V2.0 现已发布
+          </div> */}
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 max-w-4xl glow-text animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
             将创意瞬间转化为 <br />
@@ -146,7 +146,7 @@ const Home = () => {
         <div className="max-w-[1440px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
             <Box className="w-5 h-5 text-gray-400" />
-            <span className="text-gray-400 font-medium">Pixso3D © 2024</span>
+            <span className="text-gray-400 font-medium"> © 2024</span>
           </div>
           <div className="flex gap-8 text-gray-400 text-sm">
             <a href="#" className="hover:text-white transition-colors">
