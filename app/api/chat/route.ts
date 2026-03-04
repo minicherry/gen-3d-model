@@ -18,7 +18,10 @@ const parseJsonSafe = <T>(text: string): T | null => {
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as { prompt?: unknown }
+    const body = (await req.json()) as {
+      prompt?: unknown
+      imageTo3DUrl?: unknown
+    }
     const prompt = typeof body?.prompt === 'string' ? body.prompt.trim() : ''
     const imageTo3DUrl = typeof body?.imageTo3DUrl === 'string' ? body.imageTo3DUrl.trim() : ''
     if (!prompt && !imageTo3DUrl) {
@@ -81,7 +84,7 @@ export async function POST(req: Request) {
         return JSON.stringify(result)
       }
     })
-    async function callImageTo3D(input: string, prompt: string) {
+    async function callImageTo3D(input: string) {
       const internalRequest = new Request(new URL('/api/image-to-3d', req.url), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
