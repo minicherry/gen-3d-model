@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 })
     }
     if (imageTo3DUrl) {
-      const modelResult = await callImageTo3D(imageTo3DUrl, prompt)
+      const modelResult = await callImageTo3D(imageTo3DUrl)
       return NextResponse.json({ reply: `检测到模型生成需求，已切换到直连模式并创建任务：${JSON.stringify(modelResult)}` })
     }
     const callTextTo3D = async (input: string) => {
