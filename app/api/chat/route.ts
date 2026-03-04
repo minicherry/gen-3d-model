@@ -98,6 +98,7 @@ export async function POST(req: Request) {
         task_id?: string
         status?: string
         model_urls?: Record<string, string>
+        record_url?: string
         error?: string
       }>(rawText)
 
